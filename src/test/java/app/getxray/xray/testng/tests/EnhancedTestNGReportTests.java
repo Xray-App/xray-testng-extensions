@@ -24,16 +24,15 @@ import org.testng.xml.XmlTest;
 
 import app.getxray.xray.testng.listeners.XrayListener;
 
-// import org.testng.ITestResult;
 import org.testng.ITestNGListener;
 
 import static org.joox.JOOX.$;
 
-public class ReportTests {
+public class EnhancedTestNGReportTests {
 
     private Path tempDirectory;
     private static final String REPORT_NAME = "testng-results.xml";
-    private static final Class TEST_EXAMPLES_CLASS = AnnotationExamples.class;
+    private static final Class TEST_EXAMPLES_CLASS = BasicExamples.class;
     private static final Class TEST_EXAMPLES_USING_LISTENER_CLASS = ReportListenerExamples.class;
   
     @BeforeSuite
@@ -63,7 +62,7 @@ public class ReportTests {
 
     @Test
     public void shouldMapXrayTestSummaryToTestcaseAttribute() throws Exception {
-        String testMethodName = "annotatedWithTestSummary";
+        String testMethodName = "annotatedWithXrayTestSummary";
         executeTestMethod(TEST_EXAMPLES_CLASS, testMethodName);
         
         Match report = readValidXmlFile(tempDirectory.resolve(REPORT_NAME));
@@ -75,7 +74,7 @@ public class ReportTests {
 
     @Test
     public void shouldMapXrayTestDescriptionToTestcaseAttribute() throws Exception {
-        String testMethodName = "annotatedWithTestDescription";
+        String testMethodName = "annotatedWithXrayTestDescription";
         executeTestMethod(TEST_EXAMPLES_CLASS, testMethodName);
         
         Match report = readValidXmlFile(tempDirectory.resolve(REPORT_NAME));
@@ -87,7 +86,7 @@ public class ReportTests {
 
     @Test
     public void shouldMapXrayTestKeyToTestcaseAttribute() throws Exception {
-        String testMethodName = "annotatedWithTestKey";
+        String testMethodName = "annotatedWithXrayTestKey";
         executeTestMethod(TEST_EXAMPLES_CLASS, testMethodName);
         
         Match report = readValidXmlFile(tempDirectory.resolve(REPORT_NAME));
@@ -112,7 +111,7 @@ public class ReportTests {
 
     @Test
     public void shouldMapXraySpaceDelimitedLabelsToTestcaseAttribute() throws Exception {
-        String testMethodName = "annotatedWithLabels";
+        String testMethodName = "annotatedWithXrayTestLabels";
         executeTestMethod(TEST_EXAMPLES_CLASS, testMethodName);
         
         Match report = readValidXmlFile(tempDirectory.resolve(REPORT_NAME));

@@ -4,7 +4,8 @@
 
         <test name="Report">
                 <classes>
-                        <class name="app.getxray.xray.testng.tests.ReportTests" />
+                        <class name="app.getxray.xray.testng.tests.EnhancedTestNGReportTests" />
+                        <class name="app.getxray.xray.testng.tests.XrayJsonReportTests" />
                 </classes>
         </test>
 

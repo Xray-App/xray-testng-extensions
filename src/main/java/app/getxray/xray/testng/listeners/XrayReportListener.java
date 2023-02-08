@@ -8,6 +8,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Base64;
 
+@Deprecated
 public class XrayReportListener extends XMLReporter {
 
   public static final String TAG_ATTACHMENTS = "attachments";
