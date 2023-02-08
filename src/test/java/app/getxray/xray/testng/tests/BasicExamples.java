@@ -40,6 +40,11 @@ public class BasicExamples {
     public void annotatedWithXrayTestDescription() {
     }
 
+    @Test(description = "custom test level description")
+    @XrayTest(summary = "custom summary", description = "custom description")
+    public void annotatedWithDescriptionsAndSummary() {
+    }
+
     @Test
     @Requirement(key = "CALC-1234")
     public void annotatedWithRequirementKey() {

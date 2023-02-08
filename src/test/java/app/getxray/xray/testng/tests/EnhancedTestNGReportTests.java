@@ -61,19 +61,19 @@ public class EnhancedTestNGReportTests {
     }
 
     @Test
-    public void shouldMapXrayTestSummaryToTestcaseAttribute() throws Exception {
-        String testMethodName = "annotatedWithXrayTestSummary";
+    public void shouldMapTestDescriptionToTestcaseSummaryAttribute() throws Exception {
+        String testMethodName = "annotatedWithXrayTestDescription";
         executeTestMethod(TEST_EXAMPLES_CLASS, testMethodName);
         
         Match report = readValidXmlFile(tempDirectory.resolve(REPORT_NAME));
         Match testsuite = report.child("suite");
         Match testcase = testsuite.child("test").child("class").child("test-method");
         Assert.assertEquals(testcase.attr("name", String.class), testMethodName);
-        Assert.assertEquals(testcase.child("attributes").children("attribute").matchAttr("name", "summary").cdata().trim(), "custom summary");
+        Assert.assertEquals(testcase.child("attributes").children("attribute").matchAttr("name", "summary").cdata().trim(), "custom description");
     }
 
     @Test
-    public void shouldMapXrayTestDescriptionToTestcaseAttribute() throws Exception {
+    public void shouldMapXrayTestDescriptionToTestcaseAttributes() throws Exception {
         String testMethodName = "annotatedWithXrayTestDescription";
         executeTestMethod(TEST_EXAMPLES_CLASS, testMethodName);
         
@@ -82,6 +82,7 @@ public class EnhancedTestNGReportTests {
         Match testcase = testsuite.child("test").child("class").child("test-method");
         Assert.assertEquals(testcase.attr("name", String.class), testMethodName);
         Assert.assertEquals(testcase.child("attributes").children("attribute").matchAttr("name", "description").cdata().trim(), "custom description");
+        Assert.assertEquals(testcase.child("attributes").children("attribute").matchAttr("name", "summary").cdata().trim(), "custom description");
     }
 
     @Test
@@ -95,6 +96,32 @@ public class EnhancedTestNGReportTests {
         Assert.assertEquals(testcase.attr("name", String.class), testMethodName);
         Assert.assertEquals(testcase.child("attributes").children("attribute").matchAttr("name", "test").cdata().trim(), "CALC-2000");
     }
+
+    @Test
+    public void shouldMapXrayTestSummaryToTestcaseAttribute() throws Exception {
+        String testMethodName = "annotatedWithXrayTestSummary";
+        executeTestMethod(TEST_EXAMPLES_CLASS, testMethodName);
+        
+        Match report = readValidXmlFile(tempDirectory.resolve(REPORT_NAME));
+        Match testsuite = report.child("suite");
+        Match testcase = testsuite.child("test").child("class").child("test-method");
+        Assert.assertEquals(testcase.attr("name", String.class), testMethodName);
+        Assert.assertEquals(testcase.child("attributes").children("attribute").matchAttr("name", "summary").cdata().trim(), "custom summary");
+    }
+
+    @Test
+    public void shouldMapDescriptionAndSummaryToTestcaseAttributesByPriority() throws Exception {
+        String testMethodName = "annotatedWithDescriptionsAndSummary";
+        executeTestMethod(TEST_EXAMPLES_CLASS, testMethodName);
+        
+        Match report = readValidXmlFile(tempDirectory.resolve(REPORT_NAME));
+        Match testsuite = report.child("suite");
+        Match testcase = testsuite.child("test").child("class").child("test-method");
+        Assert.assertEquals(testcase.attr("name", String.class), testMethodName);
+        Assert.assertEquals(testcase.child("attributes").children("attribute").matchAttr("name", "summary").cdata().trim(), "custom summary");
+        Assert.assertEquals(testcase.child("attributes").children("attribute").matchAttr("name", "description").cdata().trim(), "custom description");
+    }
+    
 
     @Test
     public void shouldMapXrayRequirementKeyToTestcaseAttribute() throws Exception {
