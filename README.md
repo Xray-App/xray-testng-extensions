@@ -514,8 +514,8 @@ For Xray specific questions, please contact [Xray's support team](https://jira.g
 
 ## References
 
-- [Example using TestNG with Xray on Jira server/DC](https://docs.getxray.app/display/XRAY/Testing+using+TestNG+in+Java)
-- [Example using TestNG with Xray on Jira Cloud](https://docs.getxray.app/display/XRAYCLOUD/Testing+using+TestNG+in+Java)
+- [Example using TestNG with Xray on Jira server/DC (using TestNG XML report)](https://docs.getxray.app/display/XRAY/Testing+using+TestNG+in+Java)
+- [Example using TestNG with Xray on Jira Cloud (using TestNG XML report)](https://docs.getxray.app/display/XRAYCLOUD/Testing+using+TestNG+in+Java)
 - [original discussion on customization of TestNG XML report](https://github.com/cbeust/testng/issues/2171)
 - [enhanced TestNG XML report file format](https://docs.getxray.app/display/XRAYCLOUDDRAFT/Taking+advantage+of+TestNG+XML+reports)
 - [TestNG XML endpoints for submiting results sto Xray Cloud](https://docs.getxray.app/display/XRAYCLOUD/Import+Execution+Results+-+REST#ImportExecutionResultsREST-TestNGXMLresults)
