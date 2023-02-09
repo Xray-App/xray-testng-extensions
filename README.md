@@ -448,7 +448,7 @@ public class DemoTests {
 
 This information will be added automatically by the `XrayJsonReporter` listener, so nothing else needs to be done besides using this reporter.
 
-#### Making evidence/attachments part of the TestNG XML report (TestNG 7.1 onwards)
+#### Making evidence/attachments part of the TestNG XML report
 
 *Note: This feature is not yet supported by Xray. Please vote and track this [issue](https://jira.getxray.app/browse/XRAY-4557)*!
 
@@ -481,6 +481,7 @@ The *XrayReportListener* will process the attribute `attachments` and will add t
 - evaluate the merge of XrayListener and XrayReportListener, even though the later is not yet usable
 - rename listeners
 - improve javadocs
+- add more tests, namely related to the XrayJsonReporter
 
 ## FAQ
 
