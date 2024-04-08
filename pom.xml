@@ -44,10 +44,12 @@
     </scm>
 
 	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
         <!-- the following lines were needed because for vscode -->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<testng.version>7.6.1</testng.version>
         <jcommander.version>1.78</jcommander.version>
         <joox.version>1.6.2</joox.version>
@@ -116,7 +118,9 @@
         <plugins>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <debug>true</debug>
                     <source>${maven.compiler.source}</source>
