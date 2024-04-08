@@ -50,7 +50,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-		<testng.version>7.6.1</testng.version>
+		<testng.version>7.9.0</testng.version>
         <jcommander.version>1.78</jcommander.version>
         <joox.version>1.6.2</joox.version>
         <json-simple.version>1.1.1</json-simple.version>
