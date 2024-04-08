@@ -43,19 +43,31 @@
         <url>https://github.com/Xray-App/xray-testng-extensions/tree/main</url>
     </scm>
 
+	<properties>
+		<java.version>8</java.version>
+        <!-- the following lines were needed because for vscode -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+		<testng.version>7.6.1</testng.version>
+        <jcommander.version>1.78</jcommander.version>
+        <joox.version>1.6.2</joox.version>
+        <json-simple.version>1.1.1</json-simple.version>
+        <json-assert.version>1.5.1</json-assert.version>
+        <json-schema-validator.version>1.0.76</json-schema-validator.version>
+	</properties>
 
     <dependencies>
 
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>7.6.1</version>
+            <version>${testng.version}</version>
         </dependency>
  
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
-            <version>1.78</version>
+            <version>${jcommander.version}</version>
         </dependency>
         
         <!-- dependency>
@@ -68,14 +80,14 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>joox-java-6</artifactId>
-            <version>1.6.2</version>
+            <version>${joox.version}</version>
             <scope>test</scope>
         </dependency>
         
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
+            <version>${json-simple.version}</version>
             <!-- scope>test</scope -->
         </dependency>
 
@@ -89,14 +101,14 @@
         <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
-            <version>1.5.1</version>
+            <version>${json-assert.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>1.0.76</version>
+            <version>${json-schema-validator.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
