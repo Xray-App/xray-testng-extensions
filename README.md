@@ -5,6 +5,7 @@
 https://raw.githubusercontent.com/Xray-App/xray-testng-extensions/master/.github/badges/jacoco.svg)
 [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
+[![Maven Central Version](https://img.shields.io/maven-central/v/app.getxray/xray-testng-extensions)](https://central.sonatype.com/artifact/app.getxray/xray-testng-extensions/)
 
 This repo contains several enhancements to TestNG to allow you to take better advantage of [TestNG](https://testng.org/) whenever using it together with [Xray Test Management](https://getxray.app). This includes specific annotations and listener(s) that can then process their information.
 
