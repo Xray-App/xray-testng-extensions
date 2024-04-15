@@ -1,19 +1,13 @@
 package app.getxray.xray.testng.tests;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.File;
-
 import org.testng.annotations.Parameters;
-
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import app.getxray.xray.testng.annotations.Requirement;
-import app.getxray.xray.testng.annotations.XrayTest;
 
 public class DataDrivenExamples {
  

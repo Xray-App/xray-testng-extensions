@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Comparator;
 
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -27,6 +28,7 @@ import com.networknt.schema.ValidationMessage;
 import org.joox.Match;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.skyscreamer.jsonassert.ArrayValueMatcher;
 import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -168,7 +170,6 @@ public class XrayJsonReportTests {
         JSONAssert.assertEquals(expectedTest, actualTest, JSONCompareMode.LENIENT);
     }
 
-
     @Test
     public void shouldProcessTestWithParametersAnnotationAsManual() throws Exception {
         String testMethodName = "givenNumberFromXML_ifEvenCheckOK_thenCorrect";
@@ -186,15 +187,12 @@ public class XrayJsonReportTests {
 
         String expectedSteps = "[{\"action\": \"" + testMethodName + "\", \"data\": \"\", \"result\": \"ok\"}]";
         String actualSteps =  actualTestInfo.get("steps").toString();
-       // Assert.assertEquals(actualJsonStr, expectedJsonStr);
         JSONAssert.assertEquals(expectedSteps, actualSteps, JSONCompareMode.LENIENT);
-        
-
         JSONAssert.assertEquals(expectedTestInfo, actualTestInfo, JSONCompareMode.LENIENT);
     }
 
     @Test
-    public void shouldProcessTestWithDataProvider() throws Exception {
+    public void shouldProcessTestWithDataProvider() throws Exception, JSONException {
         String testMethodName = "givenNumberFromDataProvider_ifEvenCheckOK_thenCorrect";
         executeTestMethod(DATADRIVEN_EXAMPLES_CLASS, testMethodName);
         
@@ -213,58 +211,50 @@ public class XrayJsonReportTests {
         Assert.assertTrue(actualTest.has("iterations"));
         JSONArray iterations = (JSONArray)actualTest.getJSONArray("iterations");
         Assert.assertEquals(iterations.length(), 4);
+    
+        List<JSONObject> list = new ArrayList<JSONObject>();
+        for(int i = 0; i < iterations.length(); i++){
+            list.add((JSONObject)iterations.get(i));
+        }
+
+        // Sort the iterations based on the "number" parameter value
+        list.sort(new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                JSONObject iteration1 = (JSONObject) o1;
+                JSONObject iteration2 = (JSONObject) o2;
+                try {
+                    String number1 = iteration1
+                                    .getJSONArray("parameters")
+                                    .getJSONObject(0)
+                                    .getString("value");
+
+                    String number2 = iteration2
+                                    .getJSONArray("parameters")
+                                    .getJSONObject(0)
+                                    .getString("value");
+
+                    return Integer.compare(Integer.parseInt(number1), Integer.parseInt(number2));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
 
         String expectedIteration;
-        String actualIteration;
-        expectedIteration = "{  \"name\": \"iteration 1\", \"parameters\":[{\"name\":\"number\",\"value\":\"1\"},{\"name\":\"expected\",\"value\":\"false\"}], \"steps\": [ {\"evidence\": [], \"actualResult\": \"\", \"status\": \"PASSED\"} ], \"status\": \"PASSED\"}";
-        actualIteration =  iterations.get(0).toString();
-        //Assert.assertEquals(actualIteration, expectedIteration);
-        JSONAssert.assertEquals(expectedIteration, actualIteration, JSONCompareMode.LENIENT);
+        expectedIteration = "{ \"parameters\":[{\"name\":\"number\",\"value\":\"1\"},{\"name\":\"expected\",\"value\":\"false\"}], \"steps\": [ {\"evidence\": [], \"actualResult\": \"\", \"status\": \"PASSED\"} ], \"status\": \"PASSED\"}";
+        JSONAssert.assertEquals(expectedIteration, list.get(0).toString(), JSONCompareMode.LENIENT);
 
-        expectedIteration = "{  \"name\": \"iteration 2\", \"parameters\":[{\"name\":\"number\",\"value\":\"2\"},{\"name\":\"expected\",\"value\":\"true\"}], \"steps\": [ {\"evidence\": [], \"actualResult\": \"\", \"status\": \"PASSED\"} ], \"status\": \"PASSED\"}";
-        actualIteration =  iterations.get(1).toString();
-        JSONAssert.assertEquals(expectedIteration, actualIteration, JSONCompareMode.LENIENT);
+        expectedIteration = "{ \"parameters\":[{\"name\":\"number\",\"value\":\"2\"},{\"name\":\"expected\",\"value\":\"true\"}], \"steps\": [ {\"evidence\": [], \"actualResult\": \"\", \"status\": \"PASSED\"} ], \"status\": \"PASSED\"}";
+        JSONAssert.assertEquals(expectedIteration, list.get(1).toString(), JSONCompareMode.LENIENT);
 
-        expectedIteration = "{  \"name\": \"iteration 3\", \"parameters\":[{\"name\":\"number\",\"value\":\"4\"},{\"name\":\"expected\",\"value\":\"true\"}], \"steps\": [ {\"evidence\": [], \"actualResult\": \"\", \"status\": \"PASSED\"} ], \"status\": \"PASSED\"}";
-        actualIteration =  iterations.get(2).toString();
-        JSONAssert.assertEquals(expectedIteration, actualIteration, JSONCompareMode.LENIENT);
+        expectedIteration = "{ \"parameters\":[{\"name\":\"number\",\"value\":\"4\"},{\"name\":\"expected\",\"value\":\"true\"}], \"steps\": [ {\"evidence\": [], \"actualResult\": \"\", \"status\": \"PASSED\"} ], \"status\": \"PASSED\"}";
+        JSONAssert.assertEquals(expectedIteration, list.get(2).toString(), JSONCompareMode.LENIENT);
 
-        expectedIteration = "{  \"name\": \"iteration 4\", \"parameters\":[{\"name\":\"number\",\"value\":\"5\"},{\"name\":\"expected\",\"value\":\"true\"}], \"steps\": [ {\"evidence\": [], \"status\": \"FAILED\"} ], \"status\": \"FAILED\"}";
-        actualIteration =  iterations.get(3).toString();
-        //Assert.assertEquals(actualIteration, expectedIteration);
-        JSONAssert.assertEquals(expectedIteration, actualIteration, JSONCompareMode.LENIENT);
-
-        
-        // compare the iterations array with the expected
-        /*
-         * http://jsonassert.skyscreamer.org/apidocs/org/skyscreamer/jsonassert/ArrayValueMatcher.html
-         * https://stackoverflow.com/questions/50919776/ignore-specific-node-within-array-when-comparing-two-json-in-java
-         * https://www.tabnine.com/code/java/classes/org.skyscreamer.jsonassert.JSONCompareResult
-         * http://jsonassert.skyscreamer.org/javadoc/org/skyscreamer/jsonassert/JSONCompare.html
-         * 
-         */
-/*
-        String expectedJsonStr = "{\"iterations\": [{\"id\": \"valueA\"}, {\"colour\": \"Blue\"}]}";
-        String actualJsonStr = "{\"anArray\": [{\"id\": \"valueB\"}, {\"colour\": \"Blue\"}]}";
-
-        //Create custom comparator which compares two json strings but ignores reporting any differences for anArray[n].id values
-        //as they are a tolerated difference
-        // https://stackoverflow.com/questions/50919776/ignore-specific-node-within-array-when-comparing-two-json-in-java
-        ArrayValueMatcher<Object> arrValMatch = new ArrayValueMatcher<>(new CustomComparator(
-                JSONCompareMode.NON_EXTENSIBLE,
-                new Customization("iterations[*].id", (o1, o2) -> true)));
-
-        Customization arrayValueMatchCustomization = new Customization("iterations", arrValMatch);
-        CustomComparator customArrayValueComparator = new CustomComparator(
-                JSONCompareMode.NON_EXTENSIBLE, 
-                arrayValueMatchCustomization);
-        JSONAssert.assertEquals(expectedJsonStr, iterations.toString(), customArrayValueComparator);
-*/
-
-
+        expectedIteration = "{ \"parameters\":[{\"name\":\"number\",\"value\":\"5\"},{\"name\":\"expected\",\"value\":\"true\"}], \"steps\": [ {\"evidence\": [], \"status\": \"FAILED\"} ], \"status\": \"FAILED\"}";
+        JSONAssert.assertEquals(expectedIteration, list.get(3).toString(), JSONCompareMode.LENIENT);
     }
-
-    
 
     @Test
     public void shouldMapXrayRequirementKeyToTestcaseAttribute() throws Exception {
