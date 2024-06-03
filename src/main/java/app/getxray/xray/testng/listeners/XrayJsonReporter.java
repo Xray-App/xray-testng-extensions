@@ -339,8 +339,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
         if (results.size() == 1) {
 
             // regular test; non data-driven
-            ITestResult result =  results.get(0);           
-            String detailMessage = result.getThrowable().getMessage();
+            ITestResult result =  results.get(0);
             String start = dateFormatter.format(result.getStartMillis());
             String finish = dateFormatter.format(result.getEndMillis());
             test.put("start", start);
