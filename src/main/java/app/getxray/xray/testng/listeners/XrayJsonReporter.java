@@ -339,14 +339,15 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
         if (results.size() == 1) {
 
             // regular test; non data-driven
-            ITestResult result =  results.get(0);           
+            ITestResult result =  results.get(0);
             String start = dateFormatter.format(result.getStartMillis());
             String finish = dateFormatter.format(result.getEndMillis());
             test.put("start", start);
             test.put("finish", finish);
             test.put("status", getTestStatus(result.getStatus()));
-            if (result.getStatus() == ITestResult.FAILURE)
-                test.put("comment", result.getThrowable().getMessage());
+            Throwable throwable = result.getThrowable();
+            if (result.getStatus() == ITestResult.FAILURE && throwable != null && throwable.getMessage() != null)
+                test.put("comment", throwable.getMessage());
 
             // process attachments
             processAttachments(result, test);
