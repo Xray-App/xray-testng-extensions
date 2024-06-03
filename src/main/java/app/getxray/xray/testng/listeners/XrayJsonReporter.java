@@ -346,8 +346,9 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
             test.put("start", start);
             test.put("finish", finish);
             test.put("status", getTestStatus(result.getStatus()));
-            if (result.getStatus() == ITestResult.FAILURE && detailMessage != null)
-                test.put("comment", detailMessage);
+            Throwable throwable = result.getThrowable();
+            if (result.getStatus() == ITestResult.FAILURE && throwable != null && throwable.getMessage() != null)
+                test.put("comment", throwable.getMessage());
 
             // process attachments
             processAttachments(result, test);
