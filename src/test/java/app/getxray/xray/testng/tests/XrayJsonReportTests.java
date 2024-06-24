@@ -79,7 +79,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -98,7 +98,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -118,7 +118,7 @@ public class XrayJsonReportTests {
 
         
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         Assert.assertFalse(actualTest.has("testKey"));
@@ -160,7 +160,7 @@ public class XrayJsonReportTests {
 
         
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         Assert.assertFalse(actualTest.has("testInfo"));
         
@@ -179,7 +179,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -200,7 +200,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         Assert.assertEquals(actualTest.getString("status"), "FAILED");
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
@@ -265,7 +265,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         Assert.assertTrue(actualTest.has("testInfo"));
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
@@ -289,7 +289,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         Assert.assertTrue(actualTest.has("testInfo"));
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
@@ -321,7 +321,7 @@ public class XrayJsonReportTests {
 
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONArray actualEvidence = (JSONArray)actualTest.getJSONArray("evidence");
-        Assert.assertEquals(1, actualEvidence.length());
+        Assert.assertEquals(actualEvidence.length(), 1);
         JSONObject actualAttachment = (JSONObject)actualEvidence.get(0);
         JSONObject expectedAttachment = new JSONObject();
         expectedAttachment.put("filename", "xray.png");
@@ -343,7 +343,7 @@ public class XrayJsonReportTests {
         validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -365,7 +365,7 @@ public class XrayJsonReportTests {
         validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -579,7 +579,7 @@ public class XrayJsonReportTests {
         validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
