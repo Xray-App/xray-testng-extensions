@@ -72,7 +72,7 @@ Add the following dependency to your pom.xml:
         <dependency>
           <groupId>app.getxray</groupId>
           <artifactId>xray-testng-extensions</artifactId>
-          <version>0.2.1</version>
+          <version>0.3.0</version>
           <scope>test</scope>
         </dependency>
 ```
@@ -96,7 +96,7 @@ That's it.
 
 ##### 1. Enable the listener(s)
 
-In order to embed additional information on the customized TestNG XML repor,t we need to register the **XrayListener** listener. This can be done in [several ways](https://testng.org/doc/documentation-main.html#testng-listeners):
+In order to embed additional information on the customized TestNG XML report, we need to register the **XrayListener** listener. This can be done in [several ways](https://testng.org/doc/documentation-main.html#testng-listeners):
 
 - it can be discovered automatically at runtime by the ServiceLoader based on the contents of a file (e.g `src/test/resources/META-INF/services/org.testng.ITestNGListener`); this is probably the easiest one.
 
@@ -125,8 +125,8 @@ public class MyTest {
 }
 ```
 
-- or programmaticaly
-- or from the command linex
+- or programmatically
+- or from the command line
 
 Registering the listener is mandatory.
 In order to take advantage of the capabilities of this new listener, the new annotations can be used.
@@ -210,7 +210,7 @@ As an example, you can activate it on the suite configuration file (e.g., `testn
 ...
 ```
 
-This reporter must be configured as there are mandatory parameters that need to be explicitly defined. This can be done using properties defined in the surefire configuration in the `pom.xml` or by using a properties file.
+This reporter *must* be configured as there are mandatory parameters that need to be explicitly defined. This can be done using properties defined in the surefire configuration in the `pom.xml`, or by using a properties file, or even programmatically.
 
 To define the properties in `pom.xml` file, configure surefire plugin by adding a property named `reporter` having the value `app.getxray.xray.testng.listeners.XrayJsonReporter:`, followed by pair of parameter/values such as `param1=val1,...,paramN=valN`.
 
@@ -275,6 +275,54 @@ revision=123
 testplan_key=CALC-1000
 test_environments=chrome
 report_filename=xray-report.json
+```
+
+#### Defining the configuration properties dynamically/programmatically
+
+We can run the tests programmatically and also configure the reporter/listener dynamically, at runtime.
+
+We can either use a `ArrayList<ReporterConfig.Property>` to inject all the properties using `reporter.getConfig().setProperties()` or use setters on the `reporter.getConfig()` returned configuration object.
+
+```java
+        List<ReporterConfig.Property> properties = new ArrayList<ReporterConfig.Property>();
+        properties.add(new ReporterConfig.Property("summary", "UI test results"));
+        properties.add(new ReporterConfig.Property("description", "test automation results related to UI"));
+        properties.add(new ReporterConfig.Property("projectKey", "CALC"));
+        properties.add(new ReporterConfig.Property("testPlanKey", "CALC-1200"));
+        properties.add(new ReporterConfig.Property("testExecutionKey", "CALC-1201"));
+        properties.add(new ReporterConfig.Property("testEnvironments", "chrome"));
+
+        TestNG testng = new TestNG();
+        List<XmlClass> classes = new ArrayList<XmlClass>();
+        XmlSuite suite = new XmlSuite();
+        suite.setName("XrayTests");
+        XmlTest test = new XmlTest(suite);
+        test.setName("ReportTest");
+
+        XmlClass class1 = new XmlClass(testClass);
+        class1.setIncludedMethods(Collections.singletonList(new XmlInclude(methodName)));
+
+        classes.add(class1);
+        test.setXmlClasses(classes);
+        testng.setXmlSuites(Collections.singletonList(suite));
+
+        List<java.lang.Class<? extends ITestNGListener>> listeners = new ArrayList<>();
+        testng.setListenerClasses(listeners);
+        XrayJsonReporter reporter = new XrayJsonReporter();
+        // reporter.getConfig().setSummary("UI test results");
+        // reporter.getConfig().setDescription("test automation results related to UI");
+        // reporter.getConfig().setProjectKey("CALC");
+        // reporter.getConfig().setTestPlanKey("CALC-1200");
+        // reporter.getConfig().setTestExecutionKey("CALC-1200");
+        // reporter.getConfig().setTestEnvironments("chrome");
+        reporter.getConfig().setProperties(properties);;
+
+
+        testng.addListener(reporter);
+        testng.setOutputDirectory(tempDirectory.toString());
+        testng.setDataProviderThreadCount(1);
+
+        testng.run();
 ```
 
 ## How to use

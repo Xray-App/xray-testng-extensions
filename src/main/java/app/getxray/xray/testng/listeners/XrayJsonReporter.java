@@ -64,17 +64,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
     }
 
 
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-        // hack: the onExecutionFinish() callback seems to be called but the value is not set; maybe a concurrency issue?
-        this.executionsFinishedAt = System.currentTimeMillis();
-        JSONObject report = new JSONObject();
-
-        
-        Set<ITestResult> testResults = Sets.newLinkedHashSet();
-        // temporary structure to hold all test results, including data-driven ones, indexed by test FQN
-        HashMap<String, ArrayList<ITestResult>> results = new HashMap<String, ArrayList<ITestResult>>();        
-        JSONObject info = new JSONObject();
-
+    private void loadConfigPropertiesFile() {
         try {
 
             InputStream stream = null;
@@ -135,6 +125,21 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
             LOGGER.error("error loading listener configuration from properties files", e);
             System.err.println(e);
 		}
+
+    }
+
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+        // hack: the onExecutionFinish() callback seems to be called but the value is not set; maybe a concurrency issue?
+        this.executionsFinishedAt = System.currentTimeMillis();
+        JSONObject report = new JSONObject();
+
+        Set<ITestResult> testResults = Sets.newLinkedHashSet();
+        // temporary structure to hold all test results, including data-driven ones, indexed by test FQN
+        HashMap<String, ArrayList<ITestResult>> results = new HashMap<String, ArrayList<ITestResult>>();
+        JSONObject info = new JSONObject();
+
+        if (this.propertiesFile != null)
+            loadConfigPropertiesFile();
 
         if (!Utils.isStringEmpty(config.getUser())) {
             info.put("user", config.getUser());  
