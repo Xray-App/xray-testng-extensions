@@ -4,7 +4,7 @@
     <groupId>app.getxray</groupId>
     <artifactId>xray-testng-extensions</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.1</version>
+    <version>0.3.0-beta</version>
     <name>xray-testng-extensions</name>
     <description>Improvements for TestNG that allow you to take better advantage of TestNG whenever using it together with Xray Test Management.</description>
     <url>https://github.com/Xray-App/xray-testng-extensions</url>

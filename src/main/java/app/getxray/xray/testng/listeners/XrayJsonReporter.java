@@ -19,6 +19,7 @@ import org.testng.xml.XmlSuite;
 import app.getxray.xray.testng.annotations.Requirement;
 import app.getxray.xray.testng.annotations.XrayTest;
 
+import java.nio.charset.StandardCharsets;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -44,6 +45,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
     private static final Logger LOGGER = LoggerFactory.getLogger(XrayJsonReporter.class);
     private final XrayJsonReporterConfig config = new XrayJsonReporterConfig();
     private static final String DEFAULT_XRAY_PROPERTIES_FILE = "xray.properties";
+    private static final String XRAY_JSON_SUMMARY_FIELD = "summary";
 
     private String propertiesFile = DEFAULT_XRAY_PROPERTIES_FILE;
 
@@ -52,6 +54,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
 
 
 
+    @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
         /*
         String methodName = method.getTestMethod().getMethodName();
@@ -64,17 +67,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
     }
 
 
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-        // hack: the onExecutionFinish() callback seems to be called but the value is not set; maybe a concurrency issue?
-        this.executionsFinishedAt = System.currentTimeMillis();
-        JSONObject report = new JSONObject();
-
-        
-        Set<ITestResult> testResults = Sets.newLinkedHashSet();
-        // temporary structure to hold all test results, including data-driven ones, indexed by test FQN
-        HashMap<String, ArrayList<ITestResult>> results = new HashMap<String, ArrayList<ITestResult>>();        
-        JSONObject info = new JSONObject();
-
+    private void loadConfigPropertiesFile() {
         try {
 
             InputStream stream = null;
@@ -133,14 +126,29 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
 			}
         } catch (Exception e) {
             LOGGER.error("error loading listener configuration from properties files", e);
-            System.err.println(e);
 		}
+
+    }
+
+    @Override
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+        // hack: the onExecutionFinish() callback seems to be called but the value is not set; maybe a concurrency issue?
+        this.executionsFinishedAt = System.currentTimeMillis();
+        JSONObject report = new JSONObject();
+
+        Set<ITestResult> testResults = Sets.newLinkedHashSet();
+        // temporary structure to hold all test results, including data-driven ones, indexed by test FQN
+        HashMap<String, ArrayList<ITestResult>> results = new HashMap<>();
+        JSONObject info = new JSONObject();
+
+        if (this.propertiesFile != null)
+            loadConfigPropertiesFile();
 
         if (!Utils.isStringEmpty(config.getUser())) {
             info.put("user", config.getUser());  
         }
         if (!Utils.isStringEmpty(config.getSummary())) {
-            info.put("summary", config.getSummary());  
+            info.put(XRAY_JSON_SUMMARY_FIELD, config.getSummary());  
         }
         if (!Utils.isStringEmpty(config.getDescription())) {
             info.put("description", config.getDescription());  
@@ -161,7 +169,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
             info.put("testPlanKey", config.getTestPlanKey());  
         }
         if (!Utils.isStringEmpty(config.getTestEnvironments())) {
-            ArrayList<String> envs = new ArrayList<String>(Arrays.asList(config.getTestEnvironments().split(",")));
+            ArrayList<String> envs = new ArrayList<>(Arrays.asList(config.getTestEnvironments().split(",")));
             info.put("testEnvironments", envs) ; 
         }
 
@@ -194,7 +202,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
                 resultsArray.add(testResult);
                 results.put(testUid, resultsArray); 
             } else {
-                ArrayList<ITestResult> resultsArray = new ArrayList<ITestResult>();
+                ArrayList<ITestResult> resultsArray = new ArrayList<>();
                 resultsArray.add(testResult);
                 results.put(testUid, resultsArray);
             }
@@ -265,8 +273,6 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
             JSONObject testInfo = new JSONObject();
             testInfo.put("projectKey", config.getProjectKey());
 
-            //testInfo.put("summary", firstResult.getMethod().getConstructorOrMethod().getMethod());
-
             // TODO: description (and other Test issue level custom fields) can't yet be defined for new Test issues
             // add FQN of test method as a comment for easier tracking
             test.put("comment", results.get(0).getMethod().getQualifiedName());
@@ -274,7 +280,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
             if (method.isAnnotationPresent(Requirement.class)) {
                 String requirementKeys = method.getAnnotation(Requirement.class).key();
                 if (!emptyString(requirementKeys)) {
-                    ArrayList<String> requirementKeysArray = new ArrayList<String>(Arrays.asList(requirementKeys.split(" ")));
+                    ArrayList<String> requirementKeysArray = new ArrayList<>(Arrays.asList(requirementKeys.split(" ")));
                     testInfo.put("requirementKeys", requirementKeysArray);
                 }
             }
@@ -286,7 +292,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
                     
                 String labels = method.getAnnotation(XrayTest.class).labels();
                 if (!emptyString(labels)) {
-                    ArrayList<String> labelsArray = new ArrayList<String>(Arrays.asList(labels.split(" ")));
+                    ArrayList<String> labelsArray = new ArrayList<>(Arrays.asList(labels.split(" ")));
                     testInfo.put("labels", labelsArray);
                 }    
                 xrayTestSummary = method.getAnnotation(XrayTest.class).summary();
@@ -309,12 +315,12 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
                 } else {
                     testSummary = firstResult.getName();
                 }
-                testInfo.put("summary", testSummary);
+                testInfo.put(XRAY_JSON_SUMMARY_FIELD, testSummary);
             }
             
             if ( (results.size() == 1 && config.isUseManualTestsForRegularTests()) ||
                  (results.size() == 1 && results.get(0).getParameters().length > 0) || 
-                 ((results.size() > 1 && config.isUseManualTestsForDatadrivenTests()))
+                 (results.size() > 1 && config.isUseManualTestsForDatadrivenTests())
                 ) {
                 testInfo.put("type", "Manual");
                 JSONArray steps = new JSONArray();
@@ -364,7 +370,6 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
             int counter = 1;
             int totalPassed = 0;
             int totalFailed = 0;
-            int totalSkipped = 0;
             for (ITestResult result: results) {
                 JSONObject iteration = new JSONObject();
                 iteration.put("name", "iteration " + counter++);
@@ -377,7 +382,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
                     try {
                         parameterNames = getParameterNames(result.getMethod().getConstructorOrMethod().getMethod());
                     } catch (Exception ex ){
-
+                        LOGGER.error("problem getting parameter names", ex);
                     }                   
                     for (Object param: params) {
                         JSONObject p = new JSONObject();
@@ -434,9 +439,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
                 if (result.getStatus() == ITestResult.SUCCESS)
                     totalPassed++;
                 if (result.getStatus() == ITestResult.FAILURE)
-                    totalFailed++;
-                if (result.getStatus() == ITestResult.SKIP)
-                    totalSkipped++;            
+                    totalFailed++;         
             }
             test.put("iterations", iterations);
             if (totalFailed > 0)
@@ -458,7 +461,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
                 try {
                     byte[] fileContent = Files.readAllBytes(file.toPath());
                     byte[] encoded = enc.encode(fileContent);
-                    String encodedStr = new String(encoded,"UTF-8");
+                    String encodedStr = new String(encoded, StandardCharsets.UTF_8);
           
                     JSONObject tmpAttach = new JSONObject();
                     tmpAttach.put("data", encodedStr);
@@ -466,19 +469,12 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
                     tmpAttach.put("contentType", getContentTypeFor(file));
                     evidence.add(tmpAttach);
                   } catch (Exception ex) {
-                    LOGGER.error("problem processing attachment " + file.getAbsolutePath() + ": " + ex);
+                    LOGGER.error("problem processing attachment {}: {}", file.getAbsolutePath(), ex);
                   }
             }
             targetObject.put("evidence", evidence);
         }
     }
-
-/*
-    private boolean annotationPresent(IInvokedMethod method, Class clazz) {
-        boolean retVal = method.getTestMethod().getConstructorOrMethod().getMethod().isAnnotationPresent(clazz) ? true : false;
-        return retVal;
-    }
-*/
     
     private String getTestStatus(int status){
         boolean xrayCloud = config.isXrayCloud();
@@ -486,8 +482,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
             case ITestResult.FAILURE:
                 return xrayCloud ? "FAILED": "FAIL";
 
-            case ITestResult.SUCCESS:
-            case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
+            case ITestResult.SUCCESS, ITestResult.SUCCESS_PERCENTAGE_FAILURE:
                 return xrayCloud ? "PASSED": "PASS";
 
             case ITestResult.SKIP:
@@ -511,19 +506,10 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
 
     private void saveReport(String outputDirectory, JSONObject report) {
         new File(outputDirectory).mkdirs();
-        PrintWriter reportWriter = null;
-        try {
-            reportWriter = new PrintWriter(new BufferedWriter(new FileWriter(new File(outputDirectory, config.getReportFilename()))));
+        try (PrintWriter reportWriter = new PrintWriter(new BufferedWriter(new FileWriter(new File(outputDirectory, config.getReportFilename()))))){
             reportWriter.println(report.toJSONString());
         } catch (IOException e) {
             LOGGER.error("Problem saving report", e);
-        } finally {
-            try {
-                reportWriter.flush();
-                reportWriter.close();
-            } catch (Exception e) {
-                LOGGER.error("Problem closing report file", e);
-            }
         }
     }
 
@@ -537,13 +523,11 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
         switch (extension) {
             case "png":
                 return "image/png";
-            case "jpeg":
-            case "jpg":
+            case "jpeg", "jpg":
                 return "image/jpeg";
             case "gif":
                 return "image/gif";
-            case "txt":
-            case "log":
+            case "txt", "log":
                 return "text/plain";
             case "zip":
                 return "application/zip";

@@ -1,21 +1,14 @@
 
 package app.getxray.xray.testng.listeners;
 
-import java.lang.reflect.Method;
-
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
-import org.testng.ITestContext;
 import org.testng.ITestListener;
-import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
 
 import app.getxray.xray.testng.annotations.Requirement;
 import app.getxray.xray.testng.annotations.XrayTest;
-
-import static java.lang.System.out;
-import static java.lang.System.err;
 
 /**
  * The listener interface for receiving events related to execution of tests, and process Xray related annotations.
@@ -35,6 +28,7 @@ public class XrayListener implements IInvokedMethodListener, ITestListener  {
     /* (non-Javadoc)
      * @see org.testng.IInvokedMethodListener#beforeInvocation(org.testng.IInvokedMethod, org.testng.ITestResult)
      */
+    @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
         String summary = null;
         String description = null;
@@ -81,8 +75,7 @@ public class XrayListener implements IInvokedMethodListener, ITestListener  {
 
     
     private boolean annotationPresent(IInvokedMethod method, Class clazz) {
-        boolean retVal = method.getTestMethod().getConstructorOrMethod().getMethod().isAnnotationPresent(clazz) ? true : false;
-        return retVal;
+        return method.getTestMethod().getConstructorOrMethod().getMethod().isAnnotationPresent(clazz);
     }
 
     private boolean emptyString(String string) {
@@ -92,41 +85,11 @@ public class XrayListener implements IInvokedMethodListener, ITestListener  {
     /* (non-Javadoc)
      * @see org.testng.IInvokedMethodListener#afterInvocation(org.testng.IInvokedMethod, org.testng.ITestResult)
      */
+    @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-        if(method.isTestMethod()) {
-            if( !testSuccess ) {
+        if (method.isTestMethod() && !testSuccess) {
                 testResult.setStatus(ITestResult.FAILURE);
-            }
         }
-    }
-
-    public void onTestStart(ITestResult result) {
-        
-    }
-
-    public void onTestSuccess(ITestResult result) {
-        
-    }
-
-    public void onTestFailure(ITestResult result) {
-        
-    }
-
-    public void onTestSkipped(ITestResult result) {
-        
-    }
-
-    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-        
-    }
-
-    public void onStart(ITestContext context) {
-        
-    }
-
-    public void onFinish(ITestContext context) {
-
-    }
-    
+    }  
 
 }

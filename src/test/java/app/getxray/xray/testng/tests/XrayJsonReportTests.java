@@ -1,15 +1,11 @@
 package app.getxray.xray.testng.tests;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,27 +15,22 @@ import java.util.Set;
 import java.util.Comparator;
 
 import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
 import com.networknt.schema.SpecVersionDetector;
 import com.networknt.schema.ValidationMessage;
 
 // import com.google.gson.JsonParser;
 
-import org.joox.Match;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.skyscreamer.jsonassert.ArrayValueMatcher;
-import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.skyscreamer.jsonassert.comparator.CustomComparator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.internal.ReporterConfig;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.AfterSuite;
 import org.testng.TestNG;
-import org.testng.reporters.XMLReporter;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -78,7 +69,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -97,7 +88,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -117,7 +108,7 @@ public class XrayJsonReportTests {
 
         
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         Assert.assertFalse(actualTest.has("testKey"));
@@ -159,7 +150,7 @@ public class XrayJsonReportTests {
 
         
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         Assert.assertFalse(actualTest.has("testInfo"));
         
@@ -178,7 +169,7 @@ public class XrayJsonReportTests {
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -192,14 +183,14 @@ public class XrayJsonReportTests {
     }
 
     @Test
-    public void shouldProcessTestWithDataProvider() throws Exception, JSONException {
+    public void shouldProcessTestWithDataProvider() throws Exception {
         String testMethodName = "givenNumberFromDataProvider_ifEvenCheckOK_thenCorrect";
         executeTestMethod(DATADRIVEN_EXAMPLES_CLASS, testMethodName);
         
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         Assert.assertEquals(actualTest.getString("status"), "FAILED");
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
@@ -260,11 +251,11 @@ public class XrayJsonReportTests {
     public void shouldMapXrayRequirementKeyToTestcaseAttribute() throws Exception {
         String testMethodName = "annotatedWithRequirementKey";
         executeTestMethod(BASIC_EXAMPLES_CLASS, testMethodName);
-        
+
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         Assert.assertTrue(actualTest.has("testInfo"));
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
@@ -284,11 +275,11 @@ public class XrayJsonReportTests {
     public void shouldMapXraySpaceDelimitedLabelsToTestcaseAttribute() throws Exception {
         String testMethodName = "annotatedWithXrayTestLabels";
         executeTestMethod(BASIC_EXAMPLES_CLASS, testMethodName);
-        
+
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         Assert.assertTrue(actualTest.has("testInfo"));
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
@@ -308,7 +299,7 @@ public class XrayJsonReportTests {
     public void shouldStoreTestRunEvidenceToTestcaseProperty() throws Exception {
         String testMethodName = "testWithAttachment";
         executeTestMethod(BASIC_EXAMPLES_CLASS, testMethodName);
-        
+
         String file = "src/test/java/app/getxray/xray/testng/tests/xray.png";
         Base64.Encoder enc = Base64.getEncoder();
         byte[] fileContent = Files.readAllBytes(Paths.get(file));
@@ -320,7 +311,7 @@ public class XrayJsonReportTests {
 
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONArray actualEvidence = (JSONArray)actualTest.getJSONArray("evidence");
-        Assert.assertEquals(1, actualEvidence.length());
+        Assert.assertEquals(actualEvidence.length(), 1);
         JSONObject actualAttachment = (JSONObject)actualEvidence.get(0);
         JSONObject expectedAttachment = new JSONObject();
         expectedAttachment.put("filename", "xray.png");
@@ -342,7 +333,7 @@ public class XrayJsonReportTests {
         validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -352,6 +343,29 @@ public class XrayJsonReportTests {
 
         JSONAssert.assertEquals(expectedTestInfo, actualTestInfo, JSONCompareMode.LENIENT);
     }
+
+    @Test
+    public void shouldUseProjectKeyFromInlinePropertiesForAutoprovisionedTests() throws Exception {
+        String testMethodName = "legacyTest";
+        List<ReporterConfig.Property> properties = new ArrayList<ReporterConfig.Property>();
+        properties.add(new ReporterConfig.Property("projectKey", "CALC"));
+        executeTestMethodWithCustomInlineProperties(BASIC_EXAMPLES_CLASS, testMethodName, properties);
+
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+        validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
+
+        JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
+        Assert.assertEquals(actualTests.length(), 1);
+        JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
+        JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
+        JSONObject expectedTestInfo = new JSONObject();
+        expectedTestInfo.put("projectKey", "CALC");
+        expectedTestInfo.put("summary", "legacyTest");
+        expectedTestInfo.put("type", "Generic");
+
+        JSONAssert.assertEquals(expectedTestInfo, actualTestInfo, JSONCompareMode.LENIENT);
+    }
+
 
     @Test
     public void shouldReadSummaryFromProperties() throws Exception {
@@ -391,6 +405,21 @@ public class XrayJsonReportTests {
         */
     }
 
+    @Test
+    public void shouldReadSummaryFromInlineProperties() throws Exception {
+        String testMethodName = "legacyTest";
+        List<ReporterConfig.Property> properties = new ArrayList<ReporterConfig.Property>();
+        properties.add(new ReporterConfig.Property("summary", "results of automated tests"));
+        executeTestMethodWithCustomInlineProperties(BASIC_EXAMPLES_CLASS, testMethodName, properties);
+
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+        validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
+
+        JSONObject actualInfo = report.getJSONObject("info");
+        JSONObject expectedInfo = new JSONObject();
+        expectedInfo.put("summary", "results of automated tests");
+        JSONAssert.assertEquals(expectedInfo, actualInfo, JSONCompareMode.LENIENT);
+    }
 
     @Test
     public void shouldReadDescriptionFromProperties() throws Exception {
@@ -401,6 +430,22 @@ public class XrayJsonReportTests {
         String testMethodName = "legacyTest";
         executeTestMethodWithCustomProperties(BASIC_EXAMPLES_CLASS, testMethodName, customPropertiesFile.toAbsolutePath().toString());
         
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+        validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
+
+        JSONObject actualInfo = report.getJSONObject("info");
+        JSONObject expectedInfo = new JSONObject();
+        expectedInfo.put("description", "results of automated tests");
+        JSONAssert.assertEquals(expectedInfo, actualInfo, JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void shouldReadDescriptionFromInlineProperties() throws Exception {
+        String testMethodName = "legacyTest";
+        List<ReporterConfig.Property> properties = new ArrayList<ReporterConfig.Property>();
+        properties.add(new ReporterConfig.Property("description", "results of automated tests"));
+        executeTestMethodWithCustomInlineProperties(BASIC_EXAMPLES_CLASS, testMethodName, properties);
+
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
         validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
 
@@ -429,6 +474,22 @@ public class XrayJsonReportTests {
     }
 
     @Test
+    public void shouldReadTestplanKeyFromInlineProperties() throws Exception {
+        String testMethodName = "legacyTest";
+        List<ReporterConfig.Property> properties = new ArrayList<ReporterConfig.Property>();
+        properties.add(new ReporterConfig.Property("testPlanKey", "CALC-1200"));
+        executeTestMethodWithCustomInlineProperties(BASIC_EXAMPLES_CLASS, testMethodName, properties);
+
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+        validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
+
+        JSONObject actualInfo = report.getJSONObject("info");
+        JSONObject expectedInfo = new JSONObject();
+        expectedInfo.put("testPlanKey", "CALC-1200");
+        JSONAssert.assertEquals(expectedInfo, actualInfo, JSONCompareMode.LENIENT);
+    }
+
+    @Test
     public void shouldReadTestExecutionKeyFromProperties() throws Exception {
         String customProperties = "testexecution_key=CALC-1200\n";
         Path customPropertiesFile = Files.createTempFile("xray", ".properties");
@@ -437,6 +498,21 @@ public class XrayJsonReportTests {
         String testMethodName = "legacyTest";
         executeTestMethodWithCustomProperties(BASIC_EXAMPLES_CLASS, testMethodName, customPropertiesFile.toAbsolutePath().toString());
         
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+        validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
+
+        JSONObject expectedReport = new JSONObject();
+        expectedReport.put("testExecutionKey", "CALC-1200");
+        JSONAssert.assertEquals(expectedReport, report, JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void shouldReadTestExecutionKeyFromInlineProperties() throws Exception {
+        String testMethodName = "legacyTest";
+        List<ReporterConfig.Property> properties = new ArrayList<ReporterConfig.Property>();
+        properties.add(new ReporterConfig.Property("testExecutionKey", "CALC-1200"));
+        executeTestMethodWithCustomInlineProperties(BASIC_EXAMPLES_CLASS, testMethodName, properties);
+
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
         validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
 
@@ -463,6 +539,22 @@ public class XrayJsonReportTests {
         Assert.assertEquals(actualEnvs.getString(0), "chrome");
     }
 
+    @Test
+    public void shouldReadTestEnvironmentsFromInlineProperties() throws Exception {
+        String testMethodName = "legacyTest";
+        List<ReporterConfig.Property> properties = new ArrayList<ReporterConfig.Property>();
+        properties.add(new ReporterConfig.Property("testEnvironments", "chrome"));
+        executeTestMethodWithCustomInlineProperties(BASIC_EXAMPLES_CLASS, testMethodName, properties);
+
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+        validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
+
+        JSONObject actualInfo = report.getJSONObject("info");
+        JSONArray actualEnvs = (JSONArray)actualInfo.getJSONArray("testEnvironments");
+        Assert.assertEquals(actualEnvs.length(), 1);
+        Assert.assertEquals(actualEnvs.getString(0), "chrome");
+    }
+
 
     @Test
     public void shouldMapRegularTestToAManualTest() throws Exception {
@@ -472,12 +564,12 @@ public class XrayJsonReportTests {
 
         String testMethodName = "legacyTest";
         executeTestMethodWithCustomProperties(BASIC_EXAMPLES_CLASS, testMethodName, customPropertiesFile.toAbsolutePath().toString());
-        
+
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
         validateXrayCloudJsonSchema(tempDirectory.resolve(REPORT_NAME).toAbsolutePath().toString());
 
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
-        Assert.assertEquals(1, actualTests.length());
+        Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
         JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
         JSONObject expectedTestInfo = new JSONObject();
@@ -523,6 +615,39 @@ public class XrayJsonReportTests {
         testng.setListenerClasses(listeners);
         XrayJsonReporter reporter = new XrayJsonReporter();
         reporter.usePropertiesFile(propertiesFile);
+        testng.addListener(reporter);
+        testng.setOutputDirectory(tempDirectory.toString());
+        testng.setDataProviderThreadCount(1);
+
+        testng.run();
+    }
+
+    private void executeTestMethodWithCustomInlineProperties(Class<?> testClass, String methodName, List<ReporterConfig.Property> properties) {
+        TestNG testng = new TestNG();
+        List<XmlClass> classes = new ArrayList<XmlClass>();
+        XmlSuite suite = new XmlSuite();
+        suite.setName("XrayTests");
+        XmlTest test = new XmlTest(suite);
+        test.setName("ReportTest");
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("value", "1");
+        parameters.put("isEven", "false");
+        test.setParameters(parameters);
+
+        XmlClass class1 = new XmlClass(testClass);
+        class1.setIncludedMethods(Collections.singletonList(new XmlInclude(methodName)));
+
+        classes.add(class1);
+        test.setXmlClasses(classes);
+        testng.setXmlSuites(Collections.singletonList(suite));
+
+        List<java.lang.Class<? extends ITestNGListener>> listeners = new ArrayList<>();
+        testng.setListenerClasses(listeners);
+        XrayJsonReporter reporter = new XrayJsonReporter();
+
+        reporter.getConfig().setProperties(properties);;
+
         testng.addListener(reporter);
         testng.setOutputDirectory(tempDirectory.toString());
         testng.setDataProviderThreadCount(1);

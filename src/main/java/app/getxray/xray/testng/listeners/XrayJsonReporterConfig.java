@@ -14,7 +14,7 @@ public class XrayJsonReporterConfig implements IReporterConfig {
     /**
      * Text to set as the description field on the Test Execution issue. Default is "test automation results".
      */
-    private String summary = "test automation results";
+    private String summary = DEFAULT_TESTEXECUTION_SUMMARY;
     
     public static final String DEFAULT_TESTEXECUTION_SUMMARY = "test automation results";
 

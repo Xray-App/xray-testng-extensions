@@ -14,7 +14,7 @@ public class BasicExamples {
  
     @Test
     public void legacyTest() {
-        Assert.assertEquals(true, true);
+        Assert.assertTrue(true);
     }
 
     @Test
