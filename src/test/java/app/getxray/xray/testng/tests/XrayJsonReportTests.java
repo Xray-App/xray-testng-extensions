@@ -1,15 +1,11 @@
 package app.getxray.xray.testng.tests;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,28 +15,22 @@ import java.util.Set;
 import java.util.Comparator;
 
 import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
 import com.networknt.schema.SpecVersionDetector;
 import com.networknt.schema.ValidationMessage;
 
 // import com.google.gson.JsonParser;
 
-import org.joox.Match;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.skyscreamer.jsonassert.ArrayValueMatcher;
-import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.skyscreamer.jsonassert.comparator.CustomComparator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.internal.ReporterConfig;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.AfterSuite;
 import org.testng.TestNG;
-import org.testng.reporters.XMLReporter;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -193,7 +183,7 @@ public class XrayJsonReportTests {
     }
 
     @Test
-    public void shouldProcessTestWithDataProvider() throws Exception, JSONException {
+    public void shouldProcessTestWithDataProvider() throws Exception {
         String testMethodName = "givenNumberFromDataProvider_ifEvenCheckOK_thenCorrect";
         executeTestMethod(DATADRIVEN_EXAMPLES_CLASS, testMethodName);
         
@@ -655,8 +645,7 @@ public class XrayJsonReportTests {
         List<java.lang.Class<? extends ITestNGListener>> listeners = new ArrayList<>();
         testng.setListenerClasses(listeners);
         XrayJsonReporter reporter = new XrayJsonReporter();
-        // reporter.usePropertiesFile(null);
-        // reporter.getConfig().setProjectKey("CALC");
+
         reporter.getConfig().setProperties(properties);;
 
         testng.addListener(reporter);
