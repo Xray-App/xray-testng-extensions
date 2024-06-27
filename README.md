@@ -260,6 +260,7 @@ If you choose to use a properties file, it should be named `src/test/resources/x
 - `test_environments`: (optional) Test Environment(s) to assign to the Test Execution
 
 - `report_filename`: the name of the report. Default is "xray-report.json"
+- `report_only_annotated`: (optional) indicates if only annotated test methods with @XrayTest or @Requirement should be included in the report. Defaults to false.
 - `use_manual_tests_for_regular_tests`: Use "Manual" tests as an abstraction of regular, non-datadriven, tests. Default is false (i.e., "Generic" tests will be created).
 - `use_manual_tests_for_datadriven_tests`: Use "Manual" tests as an abstraction of DD tests during autoprovisioning. Default is true (for the time being, only these are supported)
 
