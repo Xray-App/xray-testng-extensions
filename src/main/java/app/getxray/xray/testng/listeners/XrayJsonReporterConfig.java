@@ -82,6 +82,11 @@ public class XrayJsonReporterConfig implements IReporterConfig {
     private String reportFilename = "xray-report.json";
 
 
+    /**
+     * Indicates if only annotated test methods with @XrayTest or @Requirement should be included in the report. Defaults to false.
+     */
+    private boolean reportOnlyAnnotatedTests = false;
+
     public void setXrayCloud(boolean xrayCloud) {
         this.xrayCloud = xrayCloud;
     }
@@ -184,5 +189,13 @@ public class XrayJsonReporterConfig implements IReporterConfig {
 
     public boolean isUseManualTestsForRegularTests() {
         return useManualTestsForRegularTests;
+    }
+
+    public void setReportOnlyAnnotatedTests(boolean reportOnlyAnnotatedTests) {
+        this.reportOnlyAnnotatedTests = reportOnlyAnnotatedTests;
+    }
+
+    public boolean isReportOnlyAnnotatedTests() {
+        return reportOnlyAnnotatedTests;
     }
 }

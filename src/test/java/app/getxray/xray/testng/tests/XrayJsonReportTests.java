@@ -62,7 +62,7 @@ public class XrayJsonReportTests {
     }
 
     @Test
-    public void legacyTestsShouldBeMappedToATest() throws Exception {
+    public void legacyTestsShouldBeMappedToATestByDefault() throws Exception {
         String testMethodName = "legacyTest";
         executeTestMethod(BASIC_EXAMPLES_CLASS, testMethodName);
         
@@ -78,6 +78,21 @@ public class XrayJsonReportTests {
 
         //JSONAssert.assertEquals("{summary:\"legacyTest\"}", actual, JSONCompareMode.LENIENT);
         JSONAssert.assertEquals(expectedTestInfo, actualTestInfo, JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void legacyTestsShouldNotBeMappedToATestIfReportOnlyAnnotatedTests() throws Exception {
+        String customProperties = "report_only_annotated_tests=true\n";
+        Path customPropertiesFile = Files.createTempFile("xray", ".properties");
+        Files.write(customPropertiesFile, customProperties.getBytes());
+
+        String testMethodName = "legacyTest";
+        executeTestMethodWithCustomProperties(BASIC_EXAMPLES_CLASS, testMethodName, customPropertiesFile.toAbsolutePath().toString());
+        
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+
+        JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
+        Assert.assertEquals(actualTests.length(), 0);
     }
 
     @Test
@@ -106,7 +121,6 @@ public class XrayJsonReportTests {
      
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
-        
         JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
         Assert.assertEquals(actualTests.length(), 1);
         JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
@@ -115,7 +129,6 @@ public class XrayJsonReportTests {
         
         JSONObject expectedTestInfo = new JSONObject();
         expectedTestInfo.put("summary", "custom description");
-        // expectedTestInfo.put("type", "Manual");
 
         JSONAssert.assertEquals(expectedTestInfo, actualTestInfo, JSONCompareMode.LENIENT);
     }
@@ -145,6 +158,30 @@ public class XrayJsonReportTests {
     public void shouldMapXrayTestKeyToTestIssueKey() throws Exception {
         String testMethodName = "annotatedWithXrayTestKey";
         executeTestMethod(BASIC_EXAMPLES_CLASS, testMethodName);
+        
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+
+        
+        JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
+        Assert.assertEquals(actualTests.length(), 1);
+        JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
+        Assert.assertFalse(actualTest.has("testInfo"));
+        
+        JSONObject expectedTest = new JSONObject();
+        expectedTest.put("testKey", "CALC-2000");
+        expectedTest.put("status", "PASSED");
+
+        JSONAssert.assertEquals(expectedTest, actualTest, JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void shouldMapXrayTestKeyToTestIssueKeyIfReportOnlyAnnotatedTests() throws Exception {
+        String customProperties = "report_only_annotated_tests=true\n";
+        Path customPropertiesFile = Files.createTempFile("xray", ".properties");
+        Files.write(customPropertiesFile, customProperties.getBytes());
+
+        String testMethodName = "annotatedWithXrayTestKey";
+        executeTestMethodWithCustomProperties(BASIC_EXAMPLES_CLASS, testMethodName, customPropertiesFile.toAbsolutePath().toString());
         
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 
@@ -251,6 +288,34 @@ public class XrayJsonReportTests {
     public void shouldMapXrayRequirementKeyToTestcaseAttribute() throws Exception {
         String testMethodName = "annotatedWithRequirementKey";
         executeTestMethod(BASIC_EXAMPLES_CLASS, testMethodName);
+
+        JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
+
+        JSONArray actualTests = (JSONArray)report.getJSONArray("tests");
+        Assert.assertEquals(actualTests.length(), 1);
+        JSONObject actualTest = (JSONObject)(report.getJSONArray("tests")).get(0);
+        Assert.assertTrue(actualTest.has("testInfo"));
+        JSONObject actualTestInfo = actualTest.getJSONObject("testInfo");
+        JSONObject expectedTestInfo = new JSONObject();
+        expectedTestInfo.put("summary", testMethodName);
+        expectedTestInfo.put("type", "Generic");
+        String[] requirementKeys = { "CALC-1234" };
+        expectedTestInfo.put("requirementKeys", new JSONArray(requirementKeys));  
+        JSONAssert.assertEquals(expectedTestInfo, actualTestInfo, JSONCompareMode.LENIENT);   
+
+        JSONObject expectedTest = new JSONObject();
+        expectedTest.put("status", "PASSED");
+        JSONAssert.assertEquals(expectedTest, actualTest, JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void shouldMapXrayRequirementKeyToTestcaseAttributeIfReportOnlyAnnotatedTests() throws Exception {
+        String customProperties = "report_only_annotated_tests=true\n";
+        Path customPropertiesFile = Files.createTempFile("xray", ".properties");
+        Files.write(customPropertiesFile, customProperties.getBytes());
+
+        String testMethodName = "annotatedWithRequirementKey";
+        executeTestMethodWithCustomProperties(BASIC_EXAMPLES_CLASS, testMethodName, customPropertiesFile.toAbsolutePath().toString());
 
         JSONObject report = readJsonFile(tempDirectory.resolve(REPORT_NAME));
 

@@ -123,6 +123,7 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
                 this.config.setXrayCloud(!"false".equals(properties.getProperty("xray_cloud")));  // true, if not specified
                 this.config.setUseManualTestsForDatadrivenTests(!"false".equals(properties.getProperty("use_manual_tests_for_datadriven_tests"))); // true, if not specified
                 this.config.setUseManualTestsForRegularTests("true".equals(properties.getProperty("use_manual_tests_for_regular_tests"))); // false, if not specified
+                this.config.setReportOnlyAnnotatedTests("true".equals(properties.getProperty("report_only_annotated_tests"))); // false, if not specified
 			}
         } catch (Exception e) {
             LOGGER.error("error loading listener configuration from properties files", e);
@@ -209,7 +210,10 @@ public class XrayJsonReporter implements IReporter, IExecutionListener, IInvoked
         }
 
         for (String testMethod : results.keySet()) {
-            addTestResults(tests, results.get(testMethod));
+            Method method = results.get(testMethod).get(0).getMethod().getConstructorOrMethod().getMethod();
+            if (!this.config.isReportOnlyAnnotatedTests() || (this.config.isReportOnlyAnnotatedTests() && (method.isAnnotationPresent(XrayTest.class) || method.isAnnotationPresent(Requirement.class)))) {
+                addTestResults(tests, results.get(testMethod));
+            }
         }
         report.put("tests", tests);
         saveReport(outputDirectory, report);
