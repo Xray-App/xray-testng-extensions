@@ -96,7 +96,7 @@ That's it.
 
 ##### 1. Enable the listener(s)
 
-In order to embed additional information on the customized TestNG XML report, we need to register the **XrayListener** listener. This can be done in [several ways](https://testng.org/doc/documentation-main.html#testng-listeners):
+In order to embed additional information on the customized TestNG XML report, we need to register the **XrayListener** listener. This can be done in [several ways](https://testng.org/#_testng_listeners):
 
 - it can be discovered automatically at runtime by the ServiceLoader based on the contents of a file (e.g `src/test/resources/META-INF/services/org.testng.ITestNGListener`); this is probably the easiest one.
 
