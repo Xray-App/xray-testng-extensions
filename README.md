@@ -1,6 +1,7 @@
 # xray-testng-extensions
 
 [![build workflow](https://github.com/Xray-App/xray-testng-extensions/actions/workflows/maven.yml/badge.svg)](https://github.com/Xray-App/xray-testng-extensions/actions/workflows/maven.yml)
+[![Known Vulnerabilities](https://snyk.io/test/github/Xray-App/xray-testng-extensions/badge.svg)](https://snyk.io/test/github/Xray-App/xray-testng-extensions)
 ![code coverage](
 https://raw.githubusercontent.com/Xray-App/xray-testng-extensions/master/.github/badges/jacoco.svg)
 [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
